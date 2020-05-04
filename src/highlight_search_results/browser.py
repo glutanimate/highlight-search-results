@@ -29,8 +29,6 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-from __future__ import unicode_literals
-
 ############## USER CONFIGURATION START ##############
 
 HIGHLIGHT_BY_DEFAULT = True
@@ -44,15 +42,9 @@ from anki.hooks import wrap, addHook
 from anki.find import Finder
 from anki.lang import _
 
-from anki import version as anki_version
-ANKI20 = anki_version.startswith("2.0")
 
-if ANKI20:
-    find_flags = QWebPage.HighlightAllOccurrences
-else:
-    import unicodedata
-    find_flags = QWebEnginePage.FindFlags(0)
-
+import unicodedata
+find_flags = QWebEnginePage.FindFlags(0)
 
 # ignore search token specifiers, search operators, and wildcard characters
 excluded_tags = ("deck:", "tag:", "card:", "note:", "is:", "prop:", "added:",
@@ -70,10 +62,7 @@ def onRowChanged(self, current, previous):
     
     txt = self.form.searchEdit.lineEdit().text()
     
-    if ANKI20:
-        txt = unicode(txt)
-    else:
-        txt = unicodedata.normalize("NFC", txt)
+    txt = unicodedata.normalize("NFC", txt)
     
     if (not txt or
             txt == _("<type here to search; hit enter to show current deck>")):
@@ -171,12 +160,8 @@ def onSetupMenus(self):
 
 
 def initialize_browser():
-    if ANKI20:
-        Browser.onRowChanged = wrap(Browser.onRowChanged, onRowChanged, "after")
-    else:
-        Browser._onRowChanged = wrap(Browser._onRowChanged, onRowChanged, "after")
-
     addHook("browser.setupMenus", onSetupMenus)
+    Browser._onRowChanged = wrap(Browser._onRowChanged, onRowChanged, "after")
     Browser.onCustomSearch = onCustomSearch
     Browser.toggleSearchHighlights = toggleSearchHighlights
     Browser.setupSearch = wrap(Browser.setupSearch, onSetupSearch, "after")
