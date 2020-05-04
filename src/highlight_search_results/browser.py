@@ -29,23 +29,36 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-from PyQt5.QtWebEngineWidgets import QWebEnginePage
-from PyQt5.QtWidgets import QShortcut, QMenu
-from PyQt5.QtGui import QKeySequence
+import unicodedata
 
-from aqt.browser import Browser
-from anki.hooks import wrap, addHook
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWebEngineWidgets import QWebEnginePage
+from PyQt5.QtWidgets import QMenu, QShortcut
+
 from anki.find import Finder
+from anki.hooks import addHook, wrap
 from anki.lang import _
+from aqt.browser import Browser
 
 from .config import config
 
-import unicodedata
 find_flags = QWebEnginePage.FindFlags(0)
 
 # ignore search token specifiers, search operators, and wildcard characters
-excluded_tags = ("deck:", "tag:", "card:", "note:", "is:", "prop:", "added:",
-                 "rated:", "nid:", "cid:", "mid:", "seen:")
+excluded_tags = (
+    "deck:",
+    "tag:",
+    "card:",
+    "note:",
+    "is:",
+    "prop:",
+    "added:",
+    "rated:",
+    "nid:",
+    "cid:",
+    "mid:",
+    "seen:",
+)
 excluded_vals = ("*", "_", "_*")
 operators = ("or", "and", "+")
 
@@ -56,22 +69,24 @@ def on_row_changed(self, current, previous):
     """
     if not self._highlightResults:
         return
-    
+
     txt = self.form.searchEdit.lineEdit().text()
-    
+
     txt = unicodedata.normalize("NFC", txt)
-    
-    if (not txt or
-            txt == _("<type here to search; hit enter to show current deck>")):
+
+    if not txt or txt == _("<type here to search; hit enter to show current deck>"):
         return
-    
+
     tokens = Finder(self.col)._tokenize(txt)
 
     vals = []
-    
+
     for token in tokens:
-        if (token in operators or token.startswith("-") or
-                token.startswith(excluded_tags)):
+        if (
+            token in operators
+            or token.startswith("-")
+            or token.startswith(excluded_tags)
+        ):
             continue
         if ":" in token:
             val = "".join(token.split(":")[1:])
@@ -79,9 +94,9 @@ def on_row_changed(self, current, previous):
                 continue
         else:
             val = token
-        val = val.strip('''",*;''')
+        val = val.strip("""",*;""")
         vals.append(val)
-    
+
     if not vals:
         return
 
@@ -112,7 +127,7 @@ def on_custom_search(self, onecard=False):
 
         if not idx or idx >= len(cids):
             idx = 0
-        cids = cids[idx:idx+1]
+        cids = cids[idx : idx + 1]
 
     self.form.tableView.selectionModel().clear()
     self.model.selectedCards = {cid: True for cid in cids}
@@ -131,9 +146,15 @@ def toggle_search_highlights(self, checked):
 
 def on_setup_search(self):
     """Add extended search hotkeys"""
-    s = QShortcut(QKeySequence(config["local"]["hotkey_select_next_matching_card"]), self.form.searchEdit)
+    s = QShortcut(
+        QKeySequence(config["local"]["hotkey_select_next_matching_card"]),
+        self.form.searchEdit,
+    )
     s.activated.connect(lambda: self.onCustomSearch(True))
-    s = QShortcut(QKeySequence(config["local"]["hotkey_select_all_matching_cards"]), self.form.searchEdit)
+    s = QShortcut(
+        QKeySequence(config["local"]["hotkey_select_all_matching_cards"]),
+        self.form.searchEdit,
+    )
     s.activated.connect(self.onCustomSearch)
 
 
@@ -145,11 +166,10 @@ def on_setup_menus(self):
         menu = self.menuView
     except AttributeError:
         self.menuView = QMenu(_("&View"))
-        self.menuBar().insertMenu(
-            self.mw.form.menuTools.menuAction(), self.menuView)
+        self.menuBar().insertMenu(self.mw.form.menuTools.menuAction(), self.menuView)
         menu = self.menuView
     menu.addSeparator()
-    a = menu.addAction('Highlight Search Results')
+    a = menu.addAction("Highlight Search Results")
     a.setCheckable(True)
     a.setChecked(self._highlightResults)
     a.setShortcut(QKeySequence(config["local"]["hotkey_toggle_highlights"]))
