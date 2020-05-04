@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Highlight Search Results in the Browser",
+  "properties": {
+    "highlight_by_default": {
+        "type": "boolean",
+        "title": "Turn search highlights on by default"
+    },
+    "hotkey_toggle_highlights": {
+      "type": "string",
+      "title": "Hotkey to toggle highlights on/off",
+      "pattern": "^((([Cc][Tt][Rr][Ll]|[Aa][Ll][Tt]|[Ss][Hh][Ii][Ff][Tt])\\+){0,3}([a-zA-Z0-9]|F[1-9]|F1[0-2]))?$"
+    },
+    "hotkey_select_next_matching_card": {
+      "type": "string",
+      "title": "Hotkey to select next matching card",
+      "pattern": "^((([Cc][Tt][Rr][Ll]|[Aa][Ll][Tt]|[Ss][Hh][Ii][Ff][Tt])\\+){0,3}([a-zA-Z0-9]|F[1-9]|F1[0-2]))?$"
+    },
+    "hotkey_select_all_matching_cards": {
+        "type": "string",
+        "title": "Hotkey to select all matching cards",
+      "pattern": "^((([Cc][Tt][Rr][Ll]|[Aa][Ll][Tt]|[Ss][Hh][Ii][Ff][Tt])\\+){0,3}([a-zA-Z0-9]|F[1-9]|F1[0-2]))?$"
+    }
+  }
+}

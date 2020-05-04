@@ -29,13 +29,6 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-############## USER CONFIGURATION START ##############
-
-HIGHLIGHT_BY_DEFAULT = True
-HOTKEY_HIGHLIGHT_TOGGLE = "Ctrl+T, H"
-
-##############  USER CONFIGURATION END  ##############
-
 from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtWidgets import QShortcut, QMenu
 from PyQt5.QtGui import QKeySequence
@@ -45,6 +38,7 @@ from anki.hooks import wrap, addHook
 from anki.find import Finder
 from anki.lang import _
 
+from .config import config
 
 import unicodedata
 find_flags = QWebEnginePage.FindFlags(0)
@@ -137,15 +131,15 @@ def toggleSearchHighlights(self, checked):
 
 def onSetupSearch(self):
     """Add extended search hotkeys"""
-    s = QShortcut(QKeySequence(_("Shift+Return")), self.form.searchEdit)
+    s = QShortcut(QKeySequence(config["local"]["hotkey_select_next_matching_card"]), self.form.searchEdit)
     s.activated.connect(lambda: self.onCustomSearch(True))
-    s = QShortcut(QKeySequence(_("Ctrl+Return")), self.form.searchEdit)
+    s = QShortcut(QKeySequence(config["local"]["hotkey_select_all_matching_cards"]), self.form.searchEdit)
     s.activated.connect(self.onCustomSearch)
 
 
 def onSetupMenus(self):
     """Setup menu entries and hotkeys"""
-    self._highlightResults = HIGHLIGHT_BY_DEFAULT
+    self._highlightResults = config["local"]["highlight_by_default"]
     try:
         # used by multiple add-ons, so we check for its existence first
         menu = self.menuView
@@ -157,8 +151,8 @@ def onSetupMenus(self):
     menu.addSeparator()
     a = menu.addAction('Highlight Search Results')
     a.setCheckable(True)
-    a.setChecked(HIGHLIGHT_BY_DEFAULT)
-    a.setShortcut(QKeySequence(HOTKEY_HIGHLIGHT_TOGGLE))
+    a.setChecked(self._highlightResults)
+    a.setShortcut(QKeySequence(config["local"]["hotkey_toggle_highlights"]))
     a.toggled.connect(self.toggleSearchHighlights)
 
 

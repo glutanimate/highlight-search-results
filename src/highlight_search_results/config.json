@@ -1,3 +1,6 @@
 {
-    
+    "highlight_by_default": true,
+    "hotkey_toggle_highlights": "Ctrl+T, H",
+    "hotkey_select_next_matching_card": "Shift+Return",
+    "hotkey_select_all_matching_cards": "Ctrl+Shift+Return"
 }
