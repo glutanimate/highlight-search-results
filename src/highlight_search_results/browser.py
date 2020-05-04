@@ -29,36 +29,19 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-from typing import Optional
+from typing import Optional, List
 import unicodedata
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QMenu, QShortcut
 
-from anki.find import Finder
 from anki.hooks import addHook, wrap
 from anki.lang import _
 from aqt.browser import Browser
+from aqt.webview import AnkiWebView
 
 from .config import config
-
-# ignore search token specifiers, search operators, and wildcard characters
-excluded_tags = (
-    "deck:",
-    "tag:",
-    "card:",
-    "note:",
-    "is:",
-    "prop:",
-    "added:",
-    "rated:",
-    "nid:",
-    "cid:",
-    "mid:",
-    "seen:",
-)
-excluded_vals = ("*", "_", "_*")
-operators = ("or", "and", "+")
+from .search import get_searchable_tokens, tokenize_query
 
 
 def on_browser_did_change_row(
@@ -67,45 +50,34 @@ def on_browser_did_change_row(
     """
     Highlight search results in Editor pane on searching
     """
-    if not browser._highlight_results:
+    if not hasattr(browser, "_highlight_results") or not browser._highlight_results:
         return
 
-    txt = browser.form.searchEdit.lineEdit().text()
+    search_text = browser.form.searchEdit.lineEdit().text()
 
-    txt = unicodedata.normalize("NFC", txt)
+    search_text = unicodedata.normalize("NFC", search_text)
 
-    if not txt or txt == _("<type here to search; hit enter to show =None deck>"):
+    if not search_text or search_text == _(
+        "<type here to search; hit enter to show =None deck>"
+    ):
         return
 
-    tokens = Finder(browser.col)._tokenize(txt)
+    tokens = tokenize_query(search_text)
+    searchable_tokens = get_searchable_tokens(tokens)
 
-    vals = []
-
-    for token in tokens:
-        if (
-            token in operators
-            or token.startswith("-")
-            or token.startswith(excluded_tags)
-        ):
-            continue
-        if ":" in token:
-            val = "".join(token.split(":")[1:])
-            if not val or val in excluded_vals:
-                continue
-        else:
-            val = token
-        val = val.strip("""",*;""")
-        vals.append(val)
-
-    if not vals:
+    if not searchable_tokens:
         return
 
-    for val in vals:
-        # FIXME: anki21 does not seem to support highlighting more than one
-        # term at once. Likely a Qt bug / regression.
-        # TODO: Perhaps choose to highlight the longest term on anki21.
-        # TODO: Find a way to exclude UI text in editor pane from highlighting
-        browser.editor.web.findText(val)
+    highlight_terms(browser.editor.web, searchable_tokens)
+
+
+def highlight_terms(webview: AnkiWebView, terms: List[str]):
+    # FIXME: anki21 does not seem to support highlighting more than one
+    # term at once. Likely a Qt bug / regression.
+    # TODO: Perhaps choose to highlight the longest term on anki21.
+    # TODO: Find a way to exclude UI text in editor pane from highlighting
+    for term in terms:
+        webview.findText(term)
 
 
 def on_custom_search(browser: Browser, onecard: Optional[bool] = False):
