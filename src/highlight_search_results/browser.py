@@ -29,19 +29,18 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-from typing import Optional, List
+from typing import Optional
 import unicodedata
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QMenu, QShortcut
 
-from anki.hooks import addHook, wrap
 from anki.lang import _
 from aqt.browser import Browser
-from aqt.webview import AnkiWebView
 
 from .config import config
 from .search import get_searchable_tokens, tokenize_query
+from .webview import highlight_terms, clear_highlights
 
 
 def on_browser_did_change_row(
@@ -69,15 +68,6 @@ def on_browser_did_change_row(
         return
 
     highlight_terms(browser.editor.web, searchable_tokens)
-
-
-def highlight_terms(webview: AnkiWebView, terms: List[str]):
-    # FIXME: anki21 does not seem to support highlighting more than one
-    # term at once. Likely a Qt bug / regression.
-    # TODO: Perhaps choose to highlight the longest term on anki21.
-    # TODO: Find a way to exclude UI text in editor pane from highlighting
-    for term in terms:
-        webview.findText(term)
 
 
 def on_custom_search(browser: Browser, onecard: Optional[bool] = False):
@@ -110,19 +100,19 @@ def toggle_search_highlights(browser: Browser, checked: bool):
     """Toggle search highlights on or off"""
     browser._highlight_results = checked
     if not checked:
-        # clear highlights
-        browser.editor.web.findText("")
+        clear_highlights(browser.editor.web)
     else:
-        on_browser_did_change_row(browser, None, None)
+        on_browser_did_change_row(browser)
 
 
-def on_setup_search(browser: Browser):
+def on_browser_will_show(browser: Browser):
     """Add extended search hotkeys"""
     shortcut = QShortcut(
         QKeySequence(config["local"]["hotkey_select_next_matching_card"]),
         browser.form.searchEdit,
     )
     shortcut.activated.connect(lambda: on_custom_search(browser, True))  # type: ignore
+    
     shortcut = QShortcut(
         QKeySequence(config["local"]["hotkey_select_all_matching_cards"]),
         browser.form.searchEdit,
@@ -156,6 +146,8 @@ def initialize_browser():
 
         browser_menus_did_init.append(on_browser_menus_did_init)
     except (ImportError, ModuleNotFoundError):
+        from anki.hooks import addHook
+
         addHook("browser.setupMenus", on_browser_menus_did_init)
 
     try:
@@ -163,9 +155,17 @@ def initialize_browser():
 
         browser_did_change_row.append(on_browser_did_change_row)
     except (ImportError, ModuleNotFoundError):
+        from anki.hooks import wrap
+
         Browser._onRowChanged = wrap(
             Browser._onRowChanged, on_browser_did_change_row, "after"
         )
 
-    # TODO: submit hook as PR
-    Browser.setupSearch = wrap(Browser.setupSearch, on_setup_search, "after")
+    try:
+        from aqt.gui_hooks import browser_will_show
+
+        browser_will_show.append(on_browser_will_show)
+    except (ImportError, ModuleNotFoundError):
+        from anki.hooks import wrap
+
+        Browser.setupSearch = wrap(Browser.setupSearch, on_browser_will_show, "after")
