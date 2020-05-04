@@ -72,8 +72,8 @@ def on_browser_did_change_row(
 
 def on_custom_search(browser: Browser, onecard: Optional[bool] = False):
     """Extended search functions"""
-    txt = browser.form.searchEdit.lineEdit().text().strip()
-    cids = browser.col.findCards(txt, order=True)
+    search_text = browser.form.searchEdit.lineEdit().text().strip()
+    cids = list(browser.col.findCards(search_text, order=True))
 
     if onecard:
         # jump to next card, while wrapping around at the end
