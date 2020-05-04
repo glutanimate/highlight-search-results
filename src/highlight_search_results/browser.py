@@ -36,7 +36,10 @@ HOTKEY_HIGHLIGHT_TOGGLE = "Ctrl+T, H"
 
 ##############  USER CONFIGURATION END  ##############
 
-from aqt.qt import *
+from PyQt5.QtWebEngineWidgets import QWebEnginePage
+from PyQt5.QtWidgets import QShortcut, QMenu
+from PyQt5.QtGui import QKeySequence
+
 from aqt.browser import Browser
 from anki.hooks import wrap, addHook
 from anki.find import Finder
