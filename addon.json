@@ -1,0 +1,15 @@
+{
+    "display_name": "Highlight Search Results in the Browser",
+    "module_name": "highlight_search_results",
+    "repo_name": "highlight-search-results",
+    "ankiweb_id": "225180905",
+    "author": "Glutanimate",
+    "contact": "https://glutanimate.com",
+    "homepage": "https://github.com/glutanimate/highlight-search-results",
+    "copyright_start": 2017,
+    "tags": "browser highlight search",
+    "conflicts": [],
+    "targets": [
+        "anki21"
+    ]
+}
