@@ -50,7 +50,7 @@ excluded_vals = ("*", "_", "_*")
 operators = ("or", "and", "+")
 
 
-def onRowChanged(self, current, previous):
+def on_row_changed(self, current, previous):
     """
     Highlight search results in Editor pane on searching
     """
@@ -93,7 +93,7 @@ def onRowChanged(self, current, previous):
         self.editor.web.findText(val, find_flags)
 
 
-def onCustomSearch(self, onecard=False):
+def on_custom_search(self, onecard=False):
     """Extended search functions"""
     txt = self.form.searchEdit.lineEdit().text().strip()
     cids = self.col.findCards(txt, order=True)
@@ -119,17 +119,17 @@ def onCustomSearch(self, onecard=False):
     self.model.restoreSelection()
 
 
-def toggleSearchHighlights(self, checked):
+def toggle_search_highlights(self, checked):
     """Toggle search highlights on or off"""
     self._highlightResults = checked
     if not checked:
         # clear highlights
         self.editor.web.findText("", find_flags)
     else:
-        onRowChanged(self, None, None)
+        on_row_changed(self, None, None)
 
 
-def onSetupSearch(self):
+def on_setup_search(self):
     """Add extended search hotkeys"""
     s = QShortcut(QKeySequence(config["local"]["hotkey_select_next_matching_card"]), self.form.searchEdit)
     s.activated.connect(lambda: self.onCustomSearch(True))
@@ -137,7 +137,7 @@ def onSetupSearch(self):
     s.activated.connect(self.onCustomSearch)
 
 
-def onSetupMenus(self):
+def on_setup_menus(self):
     """Setup menu entries and hotkeys"""
     self._highlightResults = config["local"]["highlight_by_default"]
     try:
@@ -157,8 +157,8 @@ def onSetupMenus(self):
 
 
 def initialize_browser():
-    addHook("browser.setupMenus", onSetupMenus)
-    Browser._onRowChanged = wrap(Browser._onRowChanged, onRowChanged, "after")
-    Browser.onCustomSearch = onCustomSearch
-    Browser.toggleSearchHighlights = toggleSearchHighlights
-    Browser.setupSearch = wrap(Browser.setupSearch, onSetupSearch, "after")
+    addHook("browser.setupMenus", on_setup_menus)
+    Browser._onRowChanged = wrap(Browser._onRowChanged, on_row_changed, "after")
+    Browser.onCustomSearch = on_custom_search
+    Browser.toggleSearchHighlights = toggle_search_highlights
+    Browser.setupSearch = wrap(Browser.setupSearch, on_setup_search, "after")
