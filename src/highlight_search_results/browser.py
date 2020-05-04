@@ -29,6 +29,7 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
+from typing import Optional
 import unicodedata
 
 from PyQt5.QtGui import QKeySequence
@@ -60,21 +61,23 @@ excluded_vals = ("*", "_", "_*")
 operators = ("or", "and", "+")
 
 
-def on_row_changed(self, current, previous):
+def on_browser_did_change_row(
+    browser: Browser, current: Optional[int] = None, previous: Optional[int] = None
+):
     """
     Highlight search results in Editor pane on searching
     """
-    if not self._highlightResults:
+    if not browser._highlight_results:
         return
 
-    txt = self.form.searchEdit.lineEdit().text()
+    txt = browser.form.searchEdit.lineEdit().text()
 
     txt = unicodedata.normalize("NFC", txt)
 
-    if not txt or txt == _("<type here to search; hit enter to show current deck>"):
+    if not txt or txt == _("<type here to search; hit enter to show =None deck>"):
         return
 
-    tokens = Finder(self.col)._tokenize(txt)
+    tokens = Finder(browser.col)._tokenize(txt)
 
     vals = []
 
@@ -102,18 +105,18 @@ def on_row_changed(self, current, previous):
         # term at once. Likely a Qt bug / regression.
         # TODO: Perhaps choose to highlight the longest term on anki21.
         # TODO: Find a way to exclude UI text in editor pane from highlighting
-        self.editor.web.findText(val)
+        browser.editor.web.findText(val)
 
 
-def on_custom_search(self, onecard=False):
+def on_custom_search(browser: Browser, onecard: Optional[bool] = False):
     """Extended search functions"""
-    txt = self.form.searchEdit.lineEdit().text().strip()
-    cids = self.col.findCards(txt, order=True)
+    txt = browser.form.searchEdit.lineEdit().text().strip()
+    cids = browser.col.findCards(txt, order=True)
 
     if onecard:
         # jump to next card, while wrapping around at the end
-        if self.card:
-            cur = self.card.id
+        if browser.card:
+            cur = browser.card.id
         else:
             cur = None
 
@@ -126,56 +129,71 @@ def on_custom_search(self, onecard=False):
             idx = 0
         cids = cids[idx : idx + 1]
 
-    self.form.tableView.selectionModel().clear()
-    self.model.selectedCards = {cid: True for cid in cids}
-    self.model.restoreSelection()
+    browser.form.tableView.selectionModel().clear()
+    browser.model.selectedCards = {cid: True for cid in cids}
+    browser.model.restoreSelection()
 
 
-def toggle_search_highlights(self, checked):
+def toggle_search_highlights(browser: Browser, checked: bool):
     """Toggle search highlights on or off"""
-    self._highlightResults = checked
+    browser._highlight_results = checked
     if not checked:
         # clear highlights
-        self.editor.web.findText("", find_flags)
+        browser.editor.web.findText("")
     else:
-        on_row_changed(self, None, None)
+        on_browser_did_change_row(browser, None, None)
 
 
-def on_setup_search(self):
+def on_setup_search(browser: Browser):
     """Add extended search hotkeys"""
-    s = QShortcut(
+    shortcut = QShortcut(
         QKeySequence(config["local"]["hotkey_select_next_matching_card"]),
-        self.form.searchEdit,
+        browser.form.searchEdit,
     )
-    s.activated.connect(lambda: self.onCustomSearch(True))
-    s = QShortcut(
+    shortcut.activated.connect(lambda: on_custom_search(browser, True))  # type: ignore
+    shortcut = QShortcut(
         QKeySequence(config["local"]["hotkey_select_all_matching_cards"]),
-        self.form.searchEdit,
+        browser.form.searchEdit,
     )
-    s.activated.connect(self.onCustomSearch)
+    shortcut.activated.connect(lambda: on_custom_search(browser))  # type: ignore
 
 
-def on_setup_menus(self):
+def on_browser_menus_did_init(browser: Browser):
     """Setup menu entries and hotkeys"""
-    self._highlightResults = config["local"]["highlight_by_default"]
+    browser._highlight_results = config["local"]["highlight_by_default"]
     try:
         # used by multiple add-ons, so we check for its existence first
-        menu = self.menuView
+        menu = browser.menuView
     except AttributeError:
-        self.menuView = QMenu(_("&View"))
-        self.menuBar().insertMenu(self.mw.form.menuTools.menuAction(), self.menuView)
-        menu = self.menuView
+        browser.menuView = QMenu(_("&View"))
+        browser.menuBar().insertMenu(
+            browser.mw.form.menuTools.menuAction(), browser.menuView
+        )
+        menu = browser.menuView
     menu.addSeparator()
     a = menu.addAction("Highlight Search Results")
     a.setCheckable(True)
-    a.setChecked(self._highlightResults)
+    a.setChecked(browser._highlight_results)
     a.setShortcut(QKeySequence(config["local"]["hotkey_toggle_highlights"]))
-    a.toggled.connect(self.toggleSearchHighlights)
+    a.toggled.connect(lambda toggled: toggle_search_highlights(toggled, browser))
 
 
 def initialize_browser():
-    addHook("browser.setupMenus", on_setup_menus)
-    Browser._onRowChanged = wrap(Browser._onRowChanged, on_row_changed, "after")
-    Browser.onCustomSearch = on_custom_search
-    Browser.toggleSearchHighlights = toggle_search_highlights
+    try:
+        from aqt.gui_hooks import browser_menus_did_init
+
+        browser_menus_did_init.append(on_browser_menus_did_init)
+    except (ImportError, ModuleNotFoundError):
+        addHook("browser.setupMenus", on_browser_menus_did_init)
+
+    try:
+        from aqt.gui_hooks import browser_did_change_row
+
+        browser_did_change_row.append(on_browser_did_change_row)
+    except (ImportError, ModuleNotFoundError):
+        Browser._onRowChanged = wrap(
+            Browser._onRowChanged, on_browser_did_change_row, "after"
+        )
+
+    # TODO: submit hook as PR
     Browser.setupSearch = wrap(Browser.setupSearch, on_setup_search, "after")
