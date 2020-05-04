@@ -64,7 +64,9 @@ def initialize_addon():
 
     # maybeStartDebugging()
 
-    from . import browser_search_highlight_results
+    from .browser import initialize_browser
+    
+    initialize_browser()
 
 
 initialize_addon()

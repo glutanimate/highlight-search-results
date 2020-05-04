@@ -1,23 +1,33 @@
 # -*- coding: utf-8 -*-
 
-"""
-Anki Add-on: Highlight Search Results in Browser
-
-Highlights search results in Editor pane of the Browser and adds two
-new shortcuts when searching:
-
-- Shift-Return: Jump to result in current list
-- Ctrl-Shift-Return: Select results in current list
-
-Search result highlighting may be turned off via the provided View
-menu entry, or its associated hotkey (Ctrl+T, H).
-
-Limitations: Searches through entire editor screen,
-             field descriptions included
-
-Copyright (C)  2017-2019 Aristotelis P. <https://glutanimate.com/>
-License: GNU AGPLv3 or later <https://www.gnu.org/licenses/agpl.html>
-"""
+# Highlight Search Results in the Browser Add-on for Anki
+#
+# Copyright (C) 2017-2020  Aristotelis P. <https://glutanimate.com/>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version, with the additions
+# listed at the end of the license file that accompanied this program.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# NOTE: This program is subject to certain additional terms pursuant to
+# Section 7 of the GNU Affero General Public License.  You should have
+# received a copy of these additional terms immediately following the
+# terms and conditions of the GNU Affero General Public License that
+# accompanied this program.
+#
+# If not, please request a copy through one of the means of contact
+# listed here: <https://glutanimate.com/contact/>.
+#
+# Any modifications to this file must keep this entire header intact.
 
 from __future__ import unicode_literals
 
@@ -160,12 +170,13 @@ def onSetupMenus(self):
     a.toggled.connect(self.toggleSearchHighlights)
 
 
-if ANKI20:
-    Browser.onRowChanged = wrap(Browser.onRowChanged, onRowChanged, "after")
-else:
-    Browser._onRowChanged = wrap(Browser._onRowChanged, onRowChanged, "after")
+def initialize_browser():
+    if ANKI20:
+        Browser.onRowChanged = wrap(Browser.onRowChanged, onRowChanged, "after")
+    else:
+        Browser._onRowChanged = wrap(Browser._onRowChanged, onRowChanged, "after")
 
-addHook("browser.setupMenus", onSetupMenus)
-Browser.onCustomSearch = onCustomSearch
-Browser.toggleSearchHighlights = toggleSearchHighlights
-Browser.setupSearch = wrap(Browser.setupSearch, onSetupSearch, "after")
+    addHook("browser.setupMenus", onSetupMenus)
+    Browser.onCustomSearch = onCustomSearch
+    Browser.toggleSearchHighlights = toggleSearchHighlights
+    Browser.setupSearch = wrap(Browser.setupSearch, onSetupSearch, "after")
