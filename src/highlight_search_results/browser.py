@@ -32,7 +32,6 @@
 import unicodedata
 
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtWidgets import QMenu, QShortcut
 
 from anki.find import Finder
@@ -41,8 +40,6 @@ from anki.lang import _
 from aqt.browser import Browser
 
 from .config import config
-
-find_flags = QWebEnginePage.FindFlags(0)
 
 # ignore search token specifiers, search operators, and wildcard characters
 excluded_tags = (
@@ -105,7 +102,7 @@ def on_row_changed(self, current, previous):
         # term at once. Likely a Qt bug / regression.
         # TODO: Perhaps choose to highlight the longest term on anki21.
         # TODO: Find a way to exclude UI text in editor pane from highlighting
-        self.editor.web.findText(val, find_flags)
+        self.editor.web.findText(val)
 
 
 def on_custom_search(self, onecard=False):
