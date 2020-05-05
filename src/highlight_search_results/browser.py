@@ -152,7 +152,7 @@ def on_browser_menus_did_init(browser: Browser):
     a.setCheckable(True)
     a.setChecked(browser._highlight_results)
     a.setShortcut(QKeySequence(config["local"]["hotkey_toggle_highlights"]))
-    a.toggled.connect(lambda toggled: toggle_search_highlights(toggled, browser))
+    a.toggled.connect(lambda toggled: toggle_search_highlights(browser, toggled))
 
 
 def initialize_browser():
