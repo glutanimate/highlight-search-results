@@ -12,9 +12,21 @@ If you enjoy Highlight Search Results in the Browser, please consider supporting
 
 ## [Unreleased]
 
+### Added
+
+- Support for Anki **2.1.24** and up (new hook API, new finder API)
+- Support for configuring the add-on through Anki's built-in **add-on config window**
+- All **hotkeys** are now fully **configurable**
+
+### Fixed
+
+- Fixed selecting next card on Anki 2.1.24 and up (thanks to @ijgnord for the report, #1)
+
 ### Changed
 
-- Migrated to new repository
+- **Rewrote most of the add-on**, focusing on bringing the add-on up to speed with all the latest and greatest in Anki development. This should make the add-on fairly robust against upcoming changes in Anki.
+- Dropped support for Anki 2.0
+- Migrated to new repository and build system
 
 ## [0.2.0] - 2018-02-17
 
