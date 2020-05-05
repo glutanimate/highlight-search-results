@@ -35,7 +35,7 @@ from .libaddon.platform import checkAnkiVersion
 
 # Query language properties
 
-_ignored_tags: Tuple[str, ...] = (
+_IGNORED_TAGS: Tuple[str, ...] = (
     # default query language:
     "added:",
     "deck:",
@@ -55,17 +55,17 @@ _ignored_tags: Tuple[str, ...] = (
     "rid:",
 )
 
-_ignored_values: Tuple[str, ...] = ("*", "_", "_*")
-_operators: Tuple[str, ...] = ("or", "and", "+")
-_stripped_chars: str = '",*;'
+_IGNORED_VALUES: Tuple[str, ...] = ("*", "_", "_*")
+_OPERATORS: Tuple[str, ...] = ("or", "and", "+")
+_STRIPPED_CHARS: str = '",*;'
 
 if checkAnkiVersion("2.1.24"):
     # 2.1.24+ only supports double-quotes
-    _quotes: Tuple[str, ...] = ('"',)
+    _QUOTES: Tuple[str, ...] = ('"',)
     # TODO? don't drop nc
-    _ignored_tags = _ignored_tags + ("re:", "nc:")
+    _IGNORED_TAGS = _IGNORED_TAGS + ("re:", "nc:")
 else:
-    _quotes = ('"', "'")
+    _QUOTES = ('"', "'")
 
 
 # Utility functions
@@ -86,7 +86,7 @@ def tokenize_query(query: str) -> List[str]:
 
     for c in query:
         # quoted text
-        if c in _quotes:
+        if c in _QUOTES:
             if in_quote:
                 if c == in_quote:
                     in_quote = False
@@ -138,20 +138,20 @@ def get_searchable_tokens(tokens: List[str]) -> List[str]:
 
     for token in tokens:
         if (
-            token in _operators
+            token in _OPERATORS
             or token.startswith("-")
-            or token.startswith(_ignored_tags)
+            or token.startswith(_IGNORED_TAGS)
         ):
             continue
         
         if ":" in token:
             value = token.split(":", 1)[1]
-            if not value or value in _ignored_values:
+            if not value or value in _IGNORED_VALUES:
                 continue
         else:
             value = token
         
-        value = value.strip(_stripped_chars)
+        value = value.strip(_STRIPPED_CHARS)
         
         searchable_tokens.append(value)
 
