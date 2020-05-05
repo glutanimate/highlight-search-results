@@ -63,7 +63,7 @@ if checkAnkiVersion("2.1.24"):
     # 2.1.24+ only supports double-quotes
     _quotes: Tuple[str, ...] = ('"',)
     # TODO? don't drop nc
-    _ignored_tags = _ignored_tags + ("re", "nc")
+    _ignored_tags = _ignored_tags + ("re:", "nc:")
 else:
     _quotes = ('"', "'")
 
