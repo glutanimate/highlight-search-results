@@ -29,8 +29,8 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-from typing import Optional
 import unicodedata
+from typing import List, Optional
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QMenu, QShortcut
@@ -40,7 +40,7 @@ from aqt.browser import Browser
 
 from .config import config
 from .search import get_searchable_tokens, tokenize_query
-from .webview import highlight_terms, clear_highlights
+from .webview import clear_highlights, highlight_terms
 
 
 def on_browser_did_change_row(
@@ -70,27 +70,37 @@ def on_browser_did_change_row(
     highlight_terms(browser.editor.web, searchable_tokens)
 
 
-def on_custom_search(browser: Browser, onecard: Optional[bool] = False):
-    """Extended search functions"""
+def select_all_matching_cards(browser: Browser):
+    matching_cids = _find_from_search_entry(browser)
+    _set_card_selection(browser, matching_cids)
+
+
+def select_next_matching_card(browser: Browser):
+    matching_cids = _find_from_search_entry(browser)
+
+    current_cid: Optional[int] = None if not browser.card else browser.card.id
+
+    # jump to next card, while wrapping around at the end
+
+    if current_cid and current_cid in matching_cids:
+        next_index = matching_cids.index(current_cid) + 1
+    else:
+        next_index = None
+
+    if next_index is None or next_index >= len(matching_cids):
+        next_index = 0
+
+    next_cid = matching_cids[next_index]
+
+    _set_card_selection(browser, [next_cid])
+
+
+def _find_from_search_entry(browser: Browser):
     search_text = browser.form.searchEdit.lineEdit().text().strip()
-    cids = list(browser.col.findCards(search_text, order=True))
+    return list(browser.col.findCards(search_text, order=True))
 
-    if onecard:
-        # jump to next card, while wrapping around at the end
-        if browser.card:
-            cur = browser.card.id
-        else:
-            cur = None
 
-        if cur and cur in cids:
-            idx = cids.index(cur) + 1
-        else:
-            idx = None
-
-        if not idx or idx >= len(cids):
-            idx = 0
-        cids = cids[idx : idx + 1]
-
+def _set_card_selection(browser: Browser, cids: List[int]):
     browser.form.tableView.selectionModel().clear()
     browser.model.selectedCards = {cid: True for cid in cids}
     browser.model.restoreSelection()
@@ -111,18 +121,21 @@ def on_browser_will_show(browser: Browser):
         QKeySequence(config["local"]["hotkey_select_next_matching_card"]),
         browser.form.searchEdit,
     )
-    shortcut.activated.connect(lambda: on_custom_search(browser, True))  # type: ignore
-    
+    shortcut.activated.connect(  # type: ignore
+        lambda: select_next_matching_card(browser))
+
     shortcut = QShortcut(
         QKeySequence(config["local"]["hotkey_select_all_matching_cards"]),
         browser.form.searchEdit,
     )
-    shortcut.activated.connect(lambda: on_custom_search(browser))  # type: ignore
+    shortcut.activated.connect(  # type: ignore
+        lambda: select_all_matching_cards(browser))
 
 
 def on_browser_menus_did_init(browser: Browser):
     """Setup menu entries and hotkeys"""
     browser._highlight_results = config["local"]["highlight_by_default"]
+    
     try:
         # used by multiple add-ons, so we check for its existence first
         menu = browser.menuView
@@ -132,7 +145,9 @@ def on_browser_menus_did_init(browser: Browser):
             browser.mw.form.menuTools.menuAction(), browser.menuView
         )
         menu = browser.menuView
+    
     menu.addSeparator()
+    
     a = menu.addAction("Highlight Search Results")
     a.setCheckable(True)
     a.setChecked(browser._highlight_results)
