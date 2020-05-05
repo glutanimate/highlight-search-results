@@ -42,6 +42,7 @@ from .config import config
 from .search import get_searchable_tokens, tokenize_query
 from .webview import clear_highlights, highlight_terms
 
+_SEARCH_PLACEHOLDER = _("<type here to search; hit enter to show current deck>")
 
 def on_browser_did_change_row(
     browser: Browser, current: Optional[int] = None, previous: Optional[int] = None
@@ -56,9 +57,7 @@ def on_browser_did_change_row(
 
     search_text = unicodedata.normalize("NFC", search_text)
 
-    if not search_text or search_text == _(
-        "<type here to search; hit enter to show =None deck>"
-    ):
+    if not search_text or search_text == _SEARCH_PLACEHOLDER:
         return
 
     tokens = tokenize_query(search_text)
