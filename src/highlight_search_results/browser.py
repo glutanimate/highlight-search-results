@@ -38,11 +38,21 @@ from PyQt5.QtWidgets import QMenu, QShortcut
 from anki.lang import _
 from aqt.browser import Browser
 
+from .libaddon.platform import checkAnkiVersion
+
 from .config import config
-from .search import get_searchable_tokens, tokenize_query
+from .search import SearchTokenizer, QueryLanguageVersion
 from .webview import clear_highlights, highlight_terms
 
 _SEARCH_PLACEHOLDER = _("<type here to search; hit enter to show current deck>")
+
+if checkAnkiVersion("2.1.24"):
+    _query_language_version = QueryLanguageVersion.ANKI2124
+else:
+    _query_language_version = QueryLanguageVersion.ANKI2100
+
+_search_tokenizer = SearchTokenizer(_query_language_version)
+
 
 def on_browser_did_change_row(
     browser: Browser, current: Optional[int] = None, previous: Optional[int] = None
@@ -60,8 +70,8 @@ def on_browser_did_change_row(
     if not search_text or search_text == _SEARCH_PLACEHOLDER:
         return
 
-    tokens = tokenize_query(search_text)
-    searchable_tokens = get_searchable_tokens(tokens)
+    tokens = _search_tokenizer.tokenize(search_text)
+    searchable_tokens = _search_tokenizer.get_searchable_tokens(tokens)
 
     if not searchable_tokens:
         return
@@ -121,20 +131,22 @@ def on_browser_will_show(browser: Browser):
         browser.form.searchEdit,
     )
     shortcut.activated.connect(  # type: ignore
-        lambda: select_next_matching_card(browser))
+        lambda: select_next_matching_card(browser)
+    )
 
     shortcut = QShortcut(
         QKeySequence(config["local"]["hotkey_select_all_matching_cards"]),
         browser.form.searchEdit,
     )
     shortcut.activated.connect(  # type: ignore
-        lambda: select_all_matching_cards(browser))
+        lambda: select_all_matching_cards(browser)
+    )
 
 
 def on_browser_menus_did_init(browser: Browser):
     """Setup menu entries and hotkeys"""
     browser._highlight_results = config["local"]["highlight_by_default"]
-    
+
     try:
         # used by multiple add-ons, so we check for its existence first
         menu = browser.menuView
@@ -144,9 +156,9 @@ def on_browser_menus_did_init(browser: Browser):
             browser.mw.form.menuTools.menuAction(), browser.menuView
         )
         menu = browser.menuView
-    
+
     menu.addSeparator()
-    
+
     a = menu.addAction("Highlight Search Results")
     a.setCheckable(True)
     a.setChecked(browser._highlight_results)
