@@ -35,8 +35,8 @@ from typing import Union, List, Tuple, Dict
 
 
 class QueryLanguageVersion(Enum):
-    ANKI2100 = 1
-    ANKI2124 = 2
+    ANKI2100 = 0
+    ANKI2124 = 1
 
 
 class SearchTokenizer:
@@ -97,6 +97,10 @@ class SearchTokenizer:
         (anki.find.Finder._tokenize)
         """
 
+        _escape_supported = (
+            self._query_language_version.value >= QueryLanguageVersion.ANKI2124.value
+        )
+
         in_quote: Union[bool, str] = False
         in_escape: bool = False
         tokens: List[str] = []
@@ -118,7 +122,8 @@ class SearchTokenizer:
                         token += c
                 else:
                     in_quote = c
-            elif c == "\\":
+            # escaped characters
+            elif c == "\\" and _escape_supported:
                 if in_escape:
                     # escaped "\"
                     token += c
