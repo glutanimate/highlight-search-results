@@ -1,3 +1,7 @@
+Created with <span style="color: #ff3d2e; font-weight: bold;">❤️</span> by [Glutanimate](https://glutanimate.com). If you enjoy this add-on, please consider supporting my work by **[pledging your support on Patreon](https://www.patreon.com/bePatron?u=7522179)** or by **[buying me a coffee](https://ko-fi.com/X8X0L4YV)**. Thanks!
+
+---
+
 <span style="color: #249191; font-weight: bold;">Highlight Search Results in the Browser</span> supports the following config values:
 
 **highlight_by_default** (true/false): Turn search highlights on by default. Default: `true`.
@@ -15,7 +19,3 @@
 [AnkiWeb page](https://ankiweb.net/shared/info/225180905)
 
 [Feedback/Suggestions](https://github.com/glutanimate/highlight-search-results/issues)
-
----
-
-Created with <span style="color: #ff3d2e; font-weight: bold;">❤️</span> by [Glutanimate](https://glutanimate.com). If you enjoy this add-on, please consider supporting my work by **[pledging your support on Patreon](https://www.patreon.com/bePatron?u=7522179)** or by **[buying me a coffee](https://ko-fi.com/X8X0L4YV)**. Thanks!
