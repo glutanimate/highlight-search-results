@@ -37,7 +37,7 @@ import aqt
 from aqt.qt import *
 from aqt.utils import tooltip, showInfo
 
-from anki.utils import json
+import json
 
 from .._vendor import markdown2
 
