@@ -41,7 +41,7 @@ class QueryLanguageVersion(Enum):
 
 class SearchTokenizer:
 
-    _operators_common: Tuple[str, ...] = ("or", "and", "+")
+    _operators_common: Tuple[str, ...] = ("or", "OR", "and", "AND", "+")
     _stripped_chars_common: str = '",*;'
     _ignored_values_common: Tuple[str, ...] = ("*", "_", "_*")
 
