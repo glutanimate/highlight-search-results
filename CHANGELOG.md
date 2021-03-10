@@ -12,6 +12,24 @@ If you enjoy Highlight Search Results in the Browser, please consider supporting
 
 ## [Unreleased]
 
+### Added
+
+- Added support for Anki **2.1.41** and up
+- Added support for configuring the add-on through Anki's built-in **add-on config window**
+- All **hotkeys** are now fully **configurable**
+
+### Fixed
+
+- Fixed selecting next card on Anki 2.1.24 and up (thanks to @ijgnord for the report, #1)
+
+### Changed
+
+- **Rewrote most of the add-on**, focusing on bringing the add-on up to speed with all the latest and greatest in Anki development. This should make the add-on more robust against upcoming changes in Anki.
+
+    Still, Anki has been undergoing a lot of changes under the hood recently, and these tend to break add-ons. So for the best add-on experience, my advice would be to stick to Anki version you are using until Anki prompts you to update.
+- Dropped support for Anki 2.0
+- Migrated to new repository and build system
+
 ## [1.0.0-beta.1] - 2021-03-07
 
 ### [Download](https://github.com/glutanimate/highlight-search-results/releases/tag/v1.0.0-beta.1)
