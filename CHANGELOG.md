@@ -12,6 +12,10 @@ If you enjoy Highlight Search Results in the Browser, please consider supporting
 
 ## [Unreleased]
 
+### Added
+
+- Added support for Anki **23.10** and up (thanks to @zjosua)
+
 ## [1.0.0] - 2021-03-10
 
 ### [Download](https://github.com/glutanimate/highlight-search-results/releases/tag/v1.0.0)
