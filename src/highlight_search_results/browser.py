@@ -30,17 +30,10 @@
 # Any modifications to this file must keep this entire header intact.
 
 import unicodedata
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional
 
 from aqt.browser import Browser
-from aqt.qt import qtmajor
-
-if TYPE_CHECKING or qtmajor >= 6:
-    from PyQt6.QtGui import QKeySequence, QShortcut
-    from PyQt6.QtWidgets import QMenu
-else:
-    from PyQt5.QtGui import QKeySequence
-    from PyQt5.QtWidgets import QMenu, QShortcut
+from aqt.qt import QKeySequence, QShortcut, QMenu
 
 from .libaddon.platform import checkAnkiVersion
 
