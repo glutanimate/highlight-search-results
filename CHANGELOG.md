@@ -12,6 +12,10 @@ If you enjoy Highlight Search Results in the Browser, please consider supporting
 
 ## [Unreleased]
 
+## [1.0.1] - 2023-10-21
+
+### [Download](https://github.com/glutanimate/highlight-search-results/releases/tag/v1.0.1)
+
 ### Added
 
 - Added support for Anki **23.10** and up (thanks to @zjosua)
@@ -72,7 +76,8 @@ If you enjoy Highlight Search Results in the Browser, please consider supporting
 
 - Initial release of Highlight Search Results in the Browser
 
-[Unreleased]: https://github.com/glutanimate/highlight-search-results/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/glutanimate/highlight-search-results/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/glutanimate/highlight-search-results/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/glutanimate/highlight-search-results/compare/v1.0.0-beta.1...v1.0.0
 [1.0.0-beta.1]: https://github.com/glutanimate/highlight-search-results/compare/v0.2.0...v1.0.0-beta.1
 [0.2.0]: https://github.com/glutanimate/highlight-search-results/releases/tag/v0.2.0
