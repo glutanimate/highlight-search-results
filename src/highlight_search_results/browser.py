@@ -32,10 +32,8 @@
 import unicodedata
 from typing import List, Optional
 
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QMenu, QShortcut
-
 from aqt.browser import Browser
+from aqt.qt import QKeySequence, QShortcut, QMenu
 
 from .libaddon.platform import checkAnkiVersion
 

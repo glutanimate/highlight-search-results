@@ -29,7 +29,7 @@
 #
 # Any modifications to this file must keep this entire header intact.
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from aqt.qt import QObject, pyqtSignal
 
 
 class ConfigSignals(QObject):
