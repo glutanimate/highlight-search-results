@@ -42,13 +42,13 @@ import os
 from aqt import mw
 
 from anki import version as anki_version
-from anki.utils import isMac, isWin
+from anki.utils import is_mac, is_win
 
 from .utils import ensureExists
 
-if isMac:
+if is_mac:
     PLATFORM = "mac"
-elif isWin:
+elif is_win:
     PLATFORM = "win"
 else:
     PLATFORM = "lin"
