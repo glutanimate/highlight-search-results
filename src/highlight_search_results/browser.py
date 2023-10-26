@@ -35,31 +35,13 @@ from typing import List, Optional
 from aqt.browser import Browser
 from aqt.qt import QKeySequence, QShortcut, QMenu
 
-from .libaddon.platform import checkAnkiVersion
-
 from .config import config
 from .search import SearchTokenizer, QueryLanguageVersion
 from .webview import clear_highlights, highlight_terms
 
 _SEARCH_PLACEHOLDER: Optional[str]
-
-if checkAnkiVersion("2.1.41"):
-    # 2.1.41+ has no hard-coded place-holder text
-    _SEARCH_PLACEHOLDER = None
-else:
-    try:
-        from aqt.utils import tr, TR
-
-        _SEARCH_PLACEHOLDER = tr(TR.BROWSING_TYPE_HERE_TO_SEARCH)  # type: ignore
-    except Exception:
-        from anki.lang import _
-
-        _SEARCH_PLACEHOLDER = _("<type here to search; hit enter to show current deck>")
-
-if checkAnkiVersion("2.1.24"):
-    _query_language_version = QueryLanguageVersion.ANKI2124
-else:
-    _query_language_version = QueryLanguageVersion.ANKI2100
+_SEARCH_PLACEHOLDER = None
+_query_language_version = QueryLanguageVersion.ANKI2124
 
 _search_tokenizer = SearchTokenizer(_query_language_version)
 
