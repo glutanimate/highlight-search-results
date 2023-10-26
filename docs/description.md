@@ -15,10 +15,7 @@ In addition to search highlights the following new hotkeys are provided in the s
 
 ### CONFIGURATION
 
-The following settings can be configured by editing the add-on's source code:
-
-- `HIGHLIGHT_BY_DEFAULT`: Wether or not to turn search highlights on by default
-- `HOTKEY_HIGHLIGHT_TOGGLE`: Set hotkey for highlight toggle
+You can configure hotkeys and other settings by heading to Tools → Add-ons, selecting Highlight Search Results in the Browser, and then clicking on Config.
 
 <!-- CHANGELOG -->
 
@@ -26,7 +23,7 @@ The following settings can be configured by editing the add-on's source code:
 
 ### CREDITS AND LICENSE
 
-*Copyright © 2017-2020 [Aristotelis P.](https://glutanimate.com/)  (Glutanimate)*
+*Copyright © 2017-2023 [Aristotelis P.](https://glutanimate.com/)  (Glutanimate)*
 
 This add-on was commissioned by a fellow Anki user who would like to remain anonymous. All credit for the original idea goes to them.
 
