@@ -37,7 +37,7 @@ import aqt
 from aqt.qt import *
 from aqt.utils import tooltip, showInfo
 
-import json
+from anki.utils import json
 
 from .._vendor import markdown2
 
@@ -57,7 +57,7 @@ class ConfigEditor(QDialog):
         self.setWindowTitle("{} Configuration".format(ADDON.NAME))
         self.setupWidgets()
         self.updateText(self.mgr["local"])
-        self.exec_()
+        self.exec()
     
     def setupWidgets(self):
         button_box = self.form.buttonBox

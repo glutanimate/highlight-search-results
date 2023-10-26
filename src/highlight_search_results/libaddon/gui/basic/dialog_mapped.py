@@ -37,9 +37,9 @@ keys and/or setter/getter methods.
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 
-from ...utils import getNestedValue, setNestedValue
+from aqt.qt import *
 
-from .widgets.qt import *
+from ...utils import getNestedValue, setNestedValue
 from .dialog_basic import BasicDialog
 
 __all__ = ["MappedDialog"]
@@ -182,7 +182,7 @@ class MappedDialog(BasicDialog):
         super(MappedDialog, self)._setupEvents()
         if getattr(self.form, "buttonBox", None):
             restore_btn = self.form.buttonBox.button(
-                QDialogButtonBox.RestoreDefaults)
+                QDialogButtonBox.StandardButton.RestoreDefaults)
             if restore_btn:
                 restore_btn.clicked.connect(self.restoreData)
 

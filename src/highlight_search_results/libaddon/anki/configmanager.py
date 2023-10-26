@@ -38,8 +38,8 @@ from __future__ import (absolute_import, division,
 
 import os
 import io
-
 import json
+
 from anki.hooks import addHook, runHook
 
 from .._vendor.packaging import version
@@ -253,6 +253,8 @@ class ConfigManager(object):
         for name in storages:
             self._checkStorage(name)
             saver = getattr(self, "_save" + name.capitalize())
+            if name not in self._config:
+                self.load(storage_name=name)
             saver(self._config[name])
             self._storages[name]["dirty"] = False
         
@@ -511,6 +513,7 @@ class ConfigManager(object):
             defaults = self.mw.addonManager.addonConfigDefaults(MODULE_ADDON)
             if defaults is None:
                 raise ConfigError("Default config.json file could not be found")
+            return defaults
         else:
             return self._addonConfigDefaults20()
 
@@ -533,45 +536,45 @@ class ConfigManager(object):
     # Synced storage
     ######################################################################
 
-    def _getSynced(self):
+    def _getSynced(self) -> dict:
         """
         Read synced storage config from Anki collection object
 
         Returns:
             dict -- Dictionary of synced config values
         """
-        return self._getStorageObj("synced")[self._conf_key]
+        return dict(self._getStorageObj("synced")[self._conf_key])
 
-    def _saveSynced(self, config):
+    def _saveSynced(self, config: dict):
         """
         Save synced storage config to Anki collection object
 
         Arguments:
             dict -- Dictionary of synced config values
         """
-        self._getStorageObj("synced")[self._conf_key] = config
+        self._getStorageObj("synced")[self._conf_key] = dict(config)
         self.mw.col.setMod()
 
     # Profile storage
     ######################################################################
 
-    def _getProfile(self):
+    def _getProfile(self) -> dict:
         """
         Read profile storage config from Anki profile object
 
         Returns:
             dict -- Dictionary of profile config values
         """
-        return self._getStorageObj("profile")[self._conf_key]
+        return dict(self._getStorageObj("profile")[self._conf_key])
 
-    def _saveProfile(self, config):
+    def _saveProfile(self, config: dict):
         """
         Save profile storage config to Anki profile object
 
         Arguments:
             dict -- Dictionary of profile config values
         """
-        self._getStorageObj("profile")[self._conf_key] = config
+        self._getStorageObj("profile")[self._conf_key] = dict(config)
         self.mw.col.setMod()
 
     # Helper methods for synced & profile storage
@@ -612,7 +615,7 @@ class ConfigManager(object):
         default_dict = self._storages[name]["default"]
 
         # Initialize config
-        if conf_key not in storage_obj:
+        if conf_key not in storage_obj or storage_obj[conf_key] is None:
             storage_obj[conf_key] = default_dict
         
         storage_dict = storage_obj[conf_key]

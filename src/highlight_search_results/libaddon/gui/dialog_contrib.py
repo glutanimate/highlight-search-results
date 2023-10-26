@@ -65,7 +65,7 @@ class ContribDialog(BasicDialog):
             form_module {PyQt form module} -- PyQt dialog form outlining the UI
 
         Provided Qt form should contain the following widgets:
-            QPushButton: btnMail, btnCoffee, btnPatreon, btnCredits
+            QPushButton: btnPatreon, btnCredits
 
         Keyword Arguments:
             parent {QWidget} -- Parent Qt widget (default: {None})
@@ -81,11 +81,6 @@ class ContribDialog(BasicDialog):
         """
         Connect button presses to actions
         """
-        mail_string = "mailto:{}".format(ADDON.AUTHOR_MAIL)
-        self.form.btnMail.clicked.connect(
-            lambda: openLink(mail_string))
-        self.form.btnCoffee.clicked.connect(
-            lambda: openLink(ADDON.LINKS["coffee"]))
         self.form.btnPatreon.clicked.connect(
             lambda: openLink(ADDON.LINKS["patreon"]))
         self.form.btnCredits.clicked.connect(
@@ -94,7 +89,7 @@ class ContribDialog(BasicDialog):
     def _showCredits(self):
         viewer = HTMLViewer(getAboutString(title=True),
                             title=ADDON.NAME, parent=self)
-        viewer.exec_()
+        viewer.exec()
 
     def _linkHandler(self, url):
         """Support for binding custom actions to text links"""
@@ -102,4 +97,4 @@ class ContribDialog(BasicDialog):
             return openLink(url)
         protocol, cmd = url.split("://")
         if cmd == "installed-addons":
-            print("invoking installed addons dialog")
+            openLink("https://ankiweb.net/shared/byauthor/1771074083")
